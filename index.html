@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, shrink-to-fit=yes">
+    <title>ميزان | Mezan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
+    </script>
+    <style>
+        :root {
+            --bg: #F7F2E9;
+            --card: #ffffff;
+            --accent: #B89B7A;
+            --accent2: #E8D5C0;
+            --text: #2c2c2c;
+            --muted: #8B8B8B;
+            --green: #7B9E7B;
+            --red: #C97B7B;
+            --whatsapp: #25D366;
+            --radius: 24px;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            --font-stack: 'Tajawal', sans-serif;
+        }
+        .dark {
+            --bg: #1E252E;
+            --card: #26303D;
+            --text: #f0f0f0;
+            --muted: #b0c4de;
+            --accent2: #344050;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: var(--font-stack);
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            transition: background 0.3s;
+            margin: 0;
+        }
+        #app {
+            width: 100%;
+            max-width: 430px;
+            height: 96vh;
+            height: 96dvh;
+            background: var(--card);
+            border-radius: 38px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
+        .salary-setup {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, #F7F2E9, #E8D5C0);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .setup-card {
+            width: 100%;
+            background: white;
+            border-radius: 38px;
+            padding: 36px 26px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+        }
+        .setup-icon {
+            width: 100px;
+            height: 100px;
+            margin: auto;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            background: linear-gradient(145deg, #E8D5C0, #B89B7A);
+            box-shadow: 0 15px 35px rgba(184, 155, 122, 0.35);
+        }
+        .setup-card h1 {
+            margin-top: 22px;
+            color: #B89B7A;
+            font-size: 36px;
+        }
+        .setup-card p {
+            margin: 10px 0 24px;
+            color: #777;
+            line-height: 1.8;
+        }
+        .setup-card input {
+            width: 100%;
+            border: 2px solid #E8D5C0;
+            border-radius: 24px;
+            background: #FDFAF6;
+            padding: 16px;
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 15px;
+            font-family: inherit;
+        }
+        .setup-card button {
+            width: 100%;
+            border: none;
+            border-radius: 24px;
+            padding: 18px;
+            background: #B89B7A;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .top-nav {
+            display: flex;
+            gap: 2px;
+            padding: 10px 8px;
+            background: var(--card);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .top-nav::-webkit-scrollbar {
+            display: none;
+        }
+        .top-nav-btn {
+            flex: 0 0 auto;
+            border: none;
+            background: transparent;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--muted);
+            padding: 8px 6px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-family: inherit;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+        .top-nav-btn.active {
+            background: #F0E6D8;
+            color: #B89B7A;
+            font-weight: 700;
+        }
+        .top-nav-btn div {
+            font-size: 16px;
+        }
+        .screen {
+            display: none;
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 18px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .screen.active {
+            display: block;
+        }
+        .card {
+            background: var(--card);
+            border-radius: 24px;
+            padding: 18px;
+            margin-bottom: 14px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+        .greeting-card {
+            background: var(--card);
+            border-radius: 24px;
+            padding: 16px 18px;
+            margin-bottom: 14px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+        }
+        .greeting-text h3 {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        .greeting-text .date {
+            font-size: 12px;
+            color: var(--muted);
+        }
+        .progress-ring-container {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+        }
+        .progress-ring {
+            width: 170px;
+            height: 170px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.5s;
+            background: conic-gradient(#B89B7A 0deg, #E8D5C0 0deg);
+        }
+        .ring-inner {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.04);
+        }
+        .ring-inner .amount {
+            font-size: 26px;
+            font-weight: 700;
+        }
+        .ring-inner .label {
+            font-size: 11px;
+            color: var(--muted);
+        }
+        .remaining-text {
+            text-align: center;
+            font-size: 16px;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+        .categories-row {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 8px 0;
+        }
+        .cat-chip {
+            background: #FDFAF6;
+            border-radius: 20px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+        }
+        .cat-chip .icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        .cat-chip .icon.food {
+            background: #FFE8D6;
+        }
+        .cat-chip .icon.transport {
+            background: #D6E8FF;
+        }
+        .smart-tip {
+            background: #F0F7F0;
+            border-radius: 16px;
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #5B7B5B;
+            margin-top: 10px;
+        }
+        .smart-tip.warning {
+            background: #FFF5F0;
+            color: #B06040;
+        }
+        .input,
+        select.input,
+        input[type="date"],
+        input[type="time"],
+        input[type="number"],
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            border: 2px solid #E8D5C0;
+            border-radius: 20px;
+            background: #FDFAF6;
+            padding: 14px 16px;
+            font-size: 15px;
+            margin-bottom: 12px;
+            font-family: inherit;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+        .btn {
+            width: 100%;
+            border: none;
+            border-radius: 20px;
+            padding: 15px;
+            background: #B89B7A;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .btn:active {
+            opacity: 0.8;
+            transform: scale(0.98);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #B89B7A;
+            color: #B89B7A;
+        }
+        .btn-danger {
+            background: #C97B7B;
+        }
+        .btn-whatsapp {
+            background: #25D366;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .summary-box {
+            background: #FDFAF6;
+            border-radius: 20px;
+            padding: 16px;
+            text-align: center;
+        }
+        .summary-box strong {
+            display: block;
+            font-size: 20px;
+            margin-top: 6px;
+        }
+        .calc-display {
+            background: #FDFAF6;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 14px;
+            text-align: left;
+            direction: ltr;
+            font-size: 30px;
+            min-height: 80px;
+            color: var(--text);
+            word-break: break-all;
+        }
+        .calc-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        .calc-btn {
+            border: none;
+            border-radius: 20px;
+            background: #FDFAF6;
+            height: 60px;
+            font-size: 22px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            font-family: inherit;
+            color: var(--text);
+        }
+        .calc-btn.op {
+            background: #E8D5C0;
+            color: #5B4A3A;
+        }
+        .calc-btn.eq {
+            background: #B89B7A;
+            color: white;
+            grid-column: span 4;
+        }
+        .category-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 18px;
+            background: #FDFAF6;
+            margin: 4px;
+            font-size: 13px;
+        }
+        .remove-cat {
+            cursor: pointer;
+            color: #C97B7B;
+            font-weight: bold;
+        }
+        .lock-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(6px);
+            z-index: 9998;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            border-radius: 38px;
+            color: white;
+        }
+        .trial-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, #F7F2E9, #E8D5C0);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+            border-radius: 38px;
+        }
+        .trial-overlay .card {
+            background: white;
+            border-radius: 28px;
+            padding: 24px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            max-width: 350px;
+            width: 100%;
+        }
+        .trial-overlay h2 {
+            color: #B89B7A;
+            margin-bottom: 10px;
+        }
+        .zain-info {
+            background: #FDFAF6;
+            border-radius: 18px;
+            padding: 16px;
+            margin: 15px 0;
+            text-align: right;
+            border: 1px solid #E8D5C0;
+        }
+        .zain-info strong {
+            display: block;
+            font-size: 18px;
+            color: #B89B7A;
+            margin-top: 6px;
+        }
+        .trial-overlay input {
+            text-align: center;
+            font-size: 18px;
+            letter-spacing: 4px;
+            font-weight: 700;
+        }
+        .tip-bubble {
+            background: #FDFAF6;
+            border-radius: 18px;
+            padding: 14px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .subscription-badge {
+            display: inline-block;
+            background: #7B9E7B;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-right: 8px;
+        }
+        .subscription-badge.expiring {
+            background: #d4a373;
+        }
+        .subscription-badge.expired {
+            background: #C97B7B;
+        }
+        .savings-row {
+            background: #F0F7F0;
+            border-radius: 18px;
+            padding: 14px;
+            margin-top: 12px;
+            font-size: 14px;
+            line-height: 1.8;
+            color: #3B5B3B;
+        }
+        .savings-row strong {
+            color: #B89B7A;
+            font-size: 18px;
+            display: block;
+        }
+        .prayer-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            text-align: center;
+        }
+        .prayer-cell {
+            padding: 8px 4px;
+            border-radius: 8px;
+            background: #FDFAF6;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .prayer-cell.today {
+            border: 2px solid var(--accent);
+        }
+        .prayer-cell .day-num {
+            font-weight: 700;
+        }
+        .prayer-cell .done-count {
+            font-size: 10px;
+            color: var(--green);
+            margin-top: 2px;
+        }
+        .installment-item {
+            background: #FDFAF6;
+            border-radius: 16px;
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+        .car-item {
+            background: #FDFAF6;
+            border-radius: 16px;
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .car-item .details {
+            flex: 1;
+        }
+        .car-item .details small {
+            color: var(--muted);
+            font-size: 12px;
+        }
+        button,
+        .btn,
+        .top-nav-btn,
+        .prayer-cell,
+        .remove-cat {
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        input,
+        select,
+        .input {
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="salary-setup" id="salarySetup">
+            <div class="setup-card">
+                <div class="setup-icon">💸</div>
+                <h1>ميزان</h1>
+                <p>أدخل راتبك الشهري للبدء بإدارة ميزانيتك</p>
+                <input type="number" id="salaryInput" placeholder="مثال: 1200000" inputmode="numeric">
+                <button id="startBtn">بدء الاستخدام</button>
+            </div>
+        </div>
+
+        <div class="trial-overlay" id="expiredOverlay" style="display:none;">
+            <div class="card">
+                <div style="font-size:48px;">⏰</div>
+                <h2>انتهت صلاحية الاشتراك</h2>
+                <p style="color:var(--muted);margin-bottom:12px;">قم بتجديد اشتراكك الشهري للمتابعة</p>
+                <div class="zain-info">
+                    <div>📱 زين كاش</div><strong>07839998008</strong>
+                    <div style="margin-top:8px;">💳 Q card</div><strong>7464332746</strong>
+                    <div style="margin-top:8px;font-size:12px;color:var(--muted);">المبلغ: 5,000 د.ع شهرياً</div>
+                </div>
+                <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">بعد الدفع، اطلب كود التفعيل عبر واتساب</p>
+                <button class="btn btn-whatsapp" id="whatsappOrderBtn">💬 اطلب كود التفعيل عبر واتساب</button>
+                <div style="margin-top:15px;">
+                    <input class="input" type="text" id="activationCodeInput" placeholder="XXXXX-XX">
+                    <button class="btn" id="activateBtn">تفعيل</button>
+                </div>
+                <p id="activationMsg" style="font-size:13px;margin-top:8px;color:var(--muted);"></p>
+            </div>
+        </div>
+
+        <div class="trial-overlay" id="trialReminderOverlay" style="display:none;">
+            <div class="card">
+                <div style="font-size:48px;">🎁</div>
+                <h2>أنت في الفترة التجريبية</h2>
+                <p style="color:var(--muted);margin:10px 0;">متبقي <strong id="trialDaysLeft">3</strong> أيام مجانية</p>
+                <p style="font-size:13px;color:var(--muted);">بعد انتهاء التجربة ستحتاج إلى اشتراك شهري</p>
+                <button class="btn" id="continueTrialBtn">متابعة الاستخدام</button>
+            </div>
+        </div>
+
+        <div class="lock-overlay" id="lockOverlay">
+            <div style="font-size:48px;">🔒</div>
+            <h3 style="color:white;">أدخل كلمة السر</h3>
+            <input type="password" id="lockPasswordInput" placeholder="****" maxlength="10" style="text-align:center;font-size:22px;letter-spacing:6px;width:80%;border-radius:20px;padding:14px;border:none;" inputmode="numeric">
+            <button class="btn" id="unlockBtn" style="width:80%;">فتح</button>
+            <p id="lockError" style="color:#ffb3b3;"></p>
+        </div>
+
+        <div class="top-nav" id="topNav">
+            <button class="top-nav-btn active" data-screen="home"><div>🏠</div> الرئيسية</button>
+            <button class="top-nav-btn" data-screen="add"><div>➕</div> إضافة</button>
+            <button class="top-nav-btn" data-screen="analysis"><div>📊</div> تحليل</button>
+            <button class="top-nav-btn" data-screen="compare"><div>↔️</div> مقارنة</button>
+            <button class="top-nav-btn" data-screen="yearly"><div>📅</div> سنوي</button>
+            <button class="top-nav-btn" data-screen="shopping"><div>🛒</div> تسوق</button>
+            <button class="top-nav-btn" data-screen="appointments"><div>📅</div> مواعيد</button>
+            <button class="top-nav-btn" data-screen="bills"><div>💰</div> أقساط</button>
+            <button class="top-nav-btn" data-screen="prayer"><div>🕌</div> صلاة</button>
+            <button class="top-nav-btn" data-screen="car"><div>🚗</div> سيارة</button>
+            <button class="top-nav-btn" data-screen="calculator"><div>🧮</div> حاسبة</button>
+            <button class="top-nav-btn" data-screen="settings"><div>⚙️</div> إعدادات</button>
+        </div>
+
+        <div class="screen active" id="home-screen">
+            <div class="greeting-card">
+                <div class="greeting-text">
+                    <h3 id="greetingMsg">مساء الخير، أحمد</h3>
+                    <div class="date" id="dateText">الخميس، 7 أيار 2023</div>
+                </div>
+            </div>
+            <div class="progress-ring-container">
+                <div class="progress-ring" id="progressRing">
+                    <div class="ring-inner">
+                        <span class="amount" id="monthlySpentRing">0</span>
+                        <span class="label">د.ع منفق هذا الشهر</span>
+                    </div>
+                </div>
+            </div>
+            <div class="remaining-text">المتبقي: <strong id="remainingAmount">0</strong> د.ع</div>
+            <div style="margin-top:8px;font-size:13px;color:var(--muted);">الفئات هذا الشهر:</div>
+            <div class="categories-row" id="categoryChips"></div>
+            <div id="savingsPlan" class="savings-row" style="display:none;"></div>
+            <div class="smart-tip" id="smartTip">✅ أداء مالي ممتاز هذا الشهر. استمر!</div>
+        </div>
+
+        <div class="screen" id="add-screen">
+            <h3 style="margin-bottom:12px;">✚ إضافة مصروف</h3>
+            <input class="input" type="number" id="amountInput" placeholder="المبلغ (د.ع)" inputmode="numeric">
+            <select class="input" id="categorySelect"></select>
+            <input class="input" type="date" id="dateInput">
+            <button class="btn" id="addExpenseBtn">أضف المصروف</button>
+            <p id="addConfirmation" style="font-size:12px;color:var(--muted);text-align:center;margin-top:8px;"></p>
+        </div>
+        <div class="screen" id="analysis-screen">
+            <h3 style="margin-bottom:12px;">📊 تحليل الشهر</h3>
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px;">
+                <button class="btn" id="prevMonth" style="width:auto;padding:10px 16px;">◀</button>
+                <span id="analysisMonthTitle" style="font-weight:700;flex:1;text-align:center;">أيار 2025</span>
+                <button class="btn" id="nextMonth" style="width:auto;padding:10px 16px;">▶</button>
+            </div>
+            <div class="card"><canvas id="monthChart"></canvas></div>
+            <div class="summary-grid">
+                <div class="summary-box">📤 المصروف <strong id="monthSpent">0</strong></div>
+                <div class="summary-box">💰 المتبقي <strong id="monthSaved">0</strong></div>
+            </div>
+            <div id="monthLegend" style="margin-top:8px;font-size:13px;"></div>
+        </div>
+        <div class="screen" id="compare-screen">
+            <h3 style="margin-bottom:12px;">↔️ مقارنة شهرين</h3>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                <select class="input" id="compareMonth1" style="flex:1;min-width:100px;"></select>
+                <span>↔️</span>
+                <select class="input" id="compareMonth2" style="flex:1;min-width:100px;"></select>
+                <button class="btn" id="compareBtn" style="width:auto;padding:14px 16px;">قارن</button>
+            </div>
+            <div class="card"><canvas id="compareChart"></canvas></div>
+            <div id="compareDetails" style="text-align:center;color:var(--muted);margin-top:8px;"></div>
+        </div>
+        <div class="screen" id="yearly-screen">
+            <h3 style="margin-bottom:12px;">📅 جرد سنة <span id="yearTitle">2025</span></h3>
+            <div class="summary-grid">
+                <div class="summary-box">📤 إجمالي الصرف <strong id="yearSpent">0</strong></div>
+                <div class="summary-box">💰 إجمالي المدخر <strong id="yearSaved">0</strong></div>
+            </div>
+            <div class="card"><canvas id="yearChart"></canvas></div>
+            <div class="card" id="yearDetails"></div>
+        </div>
+        <div class="screen" id="tips-screen">
+            <h3 style="margin-bottom:12px;">💡 نصائح للادخار</h3>
+            <div id="tipsContainer"></div>
+        </div>
+        <div class="screen" id="shopping-screen">
+            <h3 style="margin-bottom:12px;">🛒 قائمة التسوق</h3>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <input class="input" type="text" id="shopItemInput" placeholder="اسم الطلب" style="flex:2;min-width:120px;">
+                <input class="input" type="number" id="shopPriceInput" placeholder="السعر" style="flex:1;min-width:90px;">
+            </div>
+            <input class="input" type="date" id="shopDateInput">
+            <button class="btn" id="addShopItemBtn">أضف للمشتريات</button>
+            <div class="card" style="margin-top:12px;"><div class="title">المواد المضافة</div><div id="shoppingList"></div></div>
+        </div>
+        <div class="screen" id="appointments-screen">
+            <h3 style="margin-bottom:12px;">📅 دفتر المواعيد</h3>
+            <input class="input" type="text" id="appointmentTitleInput" placeholder="عنوان الموعد">
+            <input class="input" type="date" id="appointmentDateInput">
+            <input class="input" type="time" id="appointmentTimeInput">
+            <button class="btn" id="addAppointmentBtn">أضف موعد</button>
+            <div class="card" style="margin-top:12px;"><div class="title">المواعيد القادمة</div><div id="appointmentsList"></div></div>
+        </div>
+        <div class="screen" id="bills-screen">
+            <h3 style="margin-bottom:12px;">💰 المستحقات والأقساط</h3>
+            <input class="input" type="text" id="billTitleInput" placeholder="اسم المستحق">
+            <input class="input" type="number" id="billTotalInput" placeholder="المبلغ الإجمالي">
+            <input class="input" type="number" id="billDownPaymentInput" placeholder="الدفعة المقدمة (اختياري)">
+            <input class="input" type="number" id="billInstallmentsInput" placeholder="عدد الأقساط الشهرية">
+            <input class="input" type="date" id="billFirstDateInput">
+            <button class="btn" id="addBillBtn">أضف المستحق</button>
+            <div class="card" style="margin-top:12px;"><div class="title">المستحقات النشطة</div><div id="billsList"></div></div>
+        </div>
+        <div class="screen" id="prayer-screen">
+            <h3 style="margin-bottom:12px;">🕌 قضاء دين الصلاة</h3>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                <button class="btn" id="prayerPrevMonth" style="width:auto;padding:8px 12px;">◀</button>
+                <strong id="prayerMonthTitle"></strong>
+                <button class="btn" id="prayerNextMonth" style="width:auto;padding:8px 12px;">▶</button>
+            </div>
+            <div class="card"><div class="prayer-grid" id="prayerCalendar"></div></div>
+            <div class="card" style="margin-top:12px;"><div class="title">الصلوات الخمسة لليوم المحدد</div><div id="prayerDayDetail"></div></div>
+            <div class="card" style="margin-top:12px;"><div class="title">إحصائيات</div><div id="prayerStats"></div></div>
+        </div>
+        <div class="screen" id="car-screen">
+            <h3 style="margin-bottom:12px;">🚗 خدمة سيارتي</h3>
+            <div class="card">
+                <div class="title">⚙️ تغيير الزيت</div>
+                <input class="input" type="date" id="oilDateInput">
+                <label style="margin-bottom:12px;display:flex;align-items:center;gap:8px;"><input type="checkbox" id="oilFilterCheckbox" style="width:20px;height:20px;"> مع فلتر</label>
+                <input class="input" type="number" id="oilCostInput" placeholder="التكلفة (د.ع)">
+                <button class="btn" id="addOilChangeBtn">أضف تغيير الزيت</button>
+                <div id="oilChangeList" style="margin-top:10px;"></div>
+            </div>
+            <div class="card">
+                <div class="title">📋 دليل الصيانة</div>
+                <input class="input" type="text" id="maintenanceDescInput" placeholder="وصف الصيانة">
+                <input class="input" type="date" id="maintenanceDateInput">
+                <input class="input" type="text" id="maintenancePartsInput" placeholder="القطع المستبدلة">
+                <input class="input" type="number" id="maintenanceCostInput" placeholder="التكلفة (د.ع)">
+                <button class="btn" id="addMaintenanceBtn">أضف صيانة</button>
+                <div id="maintenanceList" style="margin-top:10px;"></div>
+            </div>
+            <div class="card">
+                <div class="title">🛞 تبديل الإطارات</div>
+                <input class="input" type="date" id="tireDateInput">
+                <input class="input" type="text" id="tireBrandInput" placeholder="اسم الماركة">
+                <input class="input" type="number" id="tireCostInput" placeholder="التكلفة (د.ع)">
+                <button class="btn" id="addTireChangeBtn">أضف تبديل إطار</button>
+                <div id="tireChangeList" style="margin-top:10px;"></div>
+            </div>
+        </div>
+        <div class="screen" id="calculator-screen">
+            <h3 style="margin-bottom:12px;">🧮 الحاسبة</h3>
+            <div class="calc-display" id="calcDisplay">0</div>
+            <div class="calc-grid" id="calcGrid"></div>
+        </div>
+        <div class="screen" id="settings-screen">
+            <h3 style="margin-bottom:12px;">⚙️ الإعدادات</h3>
+            <div class="card">
+                <label>الاسم</label>
+                <input class="input" type="text" id="userNameInput" placeholder="أحمد" value="أحمد">
+                <label>الدخل الشهري (د.ع)</label>
+                <input class="input" type="number" id="newIncomeInput" placeholder="1200000" inputmode="numeric">
+                <button class="btn" id="saveSettingsBtn" style="margin-top:10px;">حفظ الإعدادات</button>
+            </div>
+            <div class="card">
+                <h4>📊 خطة التوفير</h4>
+                <label>نسبة الادخار (%)</label>
+                <input class="input" type="number" id="savingRateInput" placeholder="مثال: 50" min="0" max="100" inputmode="numeric">
+                <button class="btn btn-outline" id="saveSavingRateBtn" style="margin-top:8px;">تطبيق الخطة</button>
+            </div>
+            <div class="card" id="subscriptionStatusCard">
+                <h4>📅 حالة الاشتراك</h4>
+                <div id="subscriptionStatus" style="font-size:14px;margin-bottom:10px;"></div>
+            </div>
+            <div class="card">
+                <h4>📂 الفئات</h4>
+                <div id="categoriesContainer" style="margin-bottom:8px;"></div>
+                <div style="display:flex;gap:8px;">
+                    <input class="input" type="text" id="newCategoryInput" placeholder="فئة جديدة" style="flex:1;">
+                    <button class="btn" id="addCategoryBtn" style="width:auto;padding:14px 16px;">➕ أضف</button>
+                </div>
+            </div>
+            <div class="card">
+                <h4>🔒 قفل التطبيق</h4>
+                <label><input type="checkbox" id="lockCheckbox"> تفعيل القفل</label>
+                <div id="lockFields" style="display:none; margin-top:10px;">
+                    <input class="input" type="password" id="oldPasswordInput" placeholder="كلمة السر القديمة">
+                    <input class="input" type="password" id="newPasswordInput" placeholder="كلمة السر الجديدة">
+                    <button class="btn" id="changePasswordBtn">تغيير كلمة السر</button>
+                </div>
+                <p id="passwordMsg" style="font-size:12px;color:var(--muted);margin-top:6px;"></p>
+            </div>
+            <div class="card" id="activationSectionCard">
+                <h4>🔑 تجديد الاشتراك</h4>
+                <div class="zain-info" style="background:#FDFAF6;border-radius:18px;padding:16px;margin-bottom:12px;border:1px solid #E8D5C0;">
+                    <div>📱 زين كاش: <strong>07839998008</strong></div>
+                    <div>💳 Q card: <strong>7464332746</strong></div>
+                    <div style="margin-top:6px;">💰 <strong>5,000 د.ع شهرياً</strong></div>
+                </div>
+                <button class="btn btn-whatsapp" id="whatsappOrderBtn2" style="margin-bottom:12px;">💬 اطلب كود التفعيل عبر واتساب</button>
+                <input class="input" type="text" id="settingsActivationCode" placeholder="XXXXX-XX">
+                <button class="btn" id="activateFromSettingsBtn">تفعيل</button>
+                <p id="settingsActivationMsg" style="font-size:12px;color:var(--muted);margin-top:8px;"></p>
+            </div>
+            <div class="card">
+                <h4>💾 النسخ الاحتياطي</h4>
+                <button class="btn" id="exportBtn">📤 تصدير البيانات</button>
+                <button class="btn btn-outline" id="importBtn" style="margin-top:8px;">📥 استيراد البيانات</button>
+                <input type="file" id="importFile" accept=".json" style="display:none;">
+            </div>
+            <button class="btn btn-danger" id="resetDataBtn">🗑️ تصفير جميع البيانات</button>
+            <button class="btn" id="darkModeSettingsBtn" style="margin-top:10px;">🌙 الوضع الليلي</button>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const KEYS = {
+                income: 'mz_income',
+                expenses: 'mz_expenses',
+                categories: 'mz_categories',
+                lockPass: 'mz_lockpass',
+                lockOn: 'mz_lockon',
+                lang: 'mz_lang',
+                name: 'mz_name',
+                trialStart: 'mz_trial',
+                subExpiry: 'mz_subexp',
+                activated: 'mz_act',
+                saving: 'mz_saving',
+                shop: 'mz_shop',
+                appoint: 'mz_appoint',
+                bills: 'mz_bills',
+                prayers: 'mz_prayers',
+                oil: 'mz_oil',
+                maint: 'mz_maint',
+                tires: 'mz_tires'
+            };
+
+            const MASTER = 'A1993L1167I7780';
+            const TRIAL_DAYS = 3;
+            const SUB_DAYS = 30;
+            const WA_NUMBER = '9647839998008';
+
+            const get = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key)); } catch { return fallback; } };
+            const set = (key, val) => localStorage.setItem(key, JSON.stringify(val));
+            const fmt = n => Number(n).toLocaleString('ar-IQ') + ' د.ع';
+            const todayStr = () => new Date().toISOString().slice(0, 10);
+            const daysInMonth = (y, m) => new Date(y, m + 1, 0).getDate();
+
+            let income = get(KEYS.income, 0);
+            let expenses = get(KEYS.expenses, []);
+            let categories = get(KEYS.categories, ['أكل', 'مطعم', 'مواصلات', 'فواتير', 'ترفيه', 'صحة', 'سيارة', 'تسوق']);
+            let lockPass = get(KEYS.lockPass, '0000');
+            let lockOn = get(KEYS.lockOn, false);
+            let lang = get(KEYS.lang, 'ar');
+            let userName = get(KEYS.name, 'أحمد');
+            let trialStart = get(KEYS.trialStart, null);
+            let subExpiry = get(KEYS.subExpiry, null);
+            let activated = get(KEYS.activated, false);
+            let savingRate = get(KEYS.saving, 0);
+            let shopping = get(KEYS.shop, []);
+            let appointments = get(KEYS.appoint, []);
+            let bills = get(KEYS.bills, []);
+            let prayers = get(KEYS.prayers, {});
+            let oilChanges = get(KEYS.oil, []);
+            let maintenances = get(KEYS.maint, []);
+            let tireChanges = get(KEYS.tires, []);
+
+            if (!trialStart) {
+                trialStart = new Date().toISOString();
+                set(KEYS.trialStart, trialStart);
+            }
+            const now = new Date();
+            const trialEnd = new Date(new Date(trialStart).getTime() + TRIAL_DAYS * 86400000);
+            const trialExpired = now > trialEnd;
+            const trialDaysLeft = Math.max(0, Math.ceil((trialEnd - now) / 86400000));
+            const subEnd = subExpiry ? new Date(subExpiry) : null;
+            const subActive = subEnd ? now < subEnd : false;
+            const subDaysLeft = subEnd ? Math.max(0, Math.ceil((subEnd - now) / 86400000)) : 0;
+
+            function canUse() {
+                if (activated && subActive) return true;
+                if (!activated && !trialExpired) return true;
+                return false;
+            }
+
+            function saveAll() {
+                set(KEYS.expenses, expenses);
+                set(KEYS.categories, categories);
+                set(KEYS.income, income);
+                set(KEYS.name, userName);
+                set(KEYS.saving, savingRate);
+                set(KEYS.shop, shopping);
+                set(KEYS.appoint, appointments);
+                set(KEYS.bills, bills);
+                set(KEYS.prayers, prayers);
+                set(KEYS.oil, oilChanges);
+                set(KEYS.maint, maintenances);
+                set(KEYS.tires, tireChanges);
+                set(KEYS.lockPass, lockPass);
+                set(KEYS.lockOn, lockOn);
+            }
+
+            const $ = id => document.getElementById(id);
+            const screens = {};
+            document.querySelectorAll('.screen').forEach(s => screens[s.id.replace('-screen', '')] = s);
+            let currentScreen = 'home';
+
+            function showScreen(id) {
+                if (!canUse()) {
+                    forceExpiredOverlay();
+                    return;
+                }
+                Object.values(screens).forEach(s => s.classList.remove('active'));
+                if (screens[id]) screens[id].classList.add('active');
+                document.querySelectorAll('.top-nav-btn').forEach(b => b.classList.remove('active'));
+                const btn = document.querySelector(`.top-nav-btn[data-screen="${id}"]`);
+                if (btn) btn.classList.add('active');
+                currentScreen = id;
+                refreshScreen();
+            }
+
+            document.querySelectorAll('.top-nav-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.dataset.screen;
+                    if (id) showScreen(id);
+                });
+            });
+
+            function refreshScreen() {
+                switch (currentScreen) {
+                    case 'home': renderHome(); break;
+                    case 'add': renderAdd(); break;
+                    case 'analysis': renderMonth(); break;
+                    case 'compare': renderCompareSelect(); break;
+                    case 'yearly': renderYearly(); break;
+                    case 'tips': renderTips(); break;
+                    case 'calculator': clearCalc(); break;
+                    case 'settings': renderSettings(); break;
+                    case 'shopping': renderShop(); break;
+                    case 'appointments': renderAppoint(); break;
+                    case 'bills': renderBills(); break;
+                    case 'prayer': renderPrayer(); break;
+                    case 'car': renderCar(); break;
+                }
+            }
+
+            function renderHome() {
+                const now = new Date();
+                const y = now.getFullYear(), m = now.getMonth();
+                const monthExp = expenses.filter(e => { const d = new Date(e.date); return d.getFullYear() === y && d.getMonth() === m; });
+                const spent = monthExp.reduce((s, e) => s + e.amount, 0);
+                const saveAmt = Math.floor(income * savingRate / 100);
+                const avail = income - saveAmt;
+                const remaining = Math.max(0, avail - spent);
+                const daysLeft = Math.max(1, daysInMonth(y, m) - now.getDate() + 1);
+                const daily = Math.floor(remaining / daysLeft);
+
+                $('greetingMsg').textContent = `مساء الخير، ${userName}`;
+                $('dateText').textContent = now.toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                $('monthlySpentRing').textContent = spent.toLocaleString('ar-IQ');
+                $('remainingAmount').textContent = remaining.toLocaleString('ar-IQ');
+                const pct = avail ? Math.min(100, (spent / avail) * 100) : 0;
+                $('progressRing').style.background = `conic-gradient(#B89B7A ${pct*3.6}deg, #E8D5C0 0deg)`;
+
+                const cats = {};
+                monthExp.forEach(e => cats[e.category] = (cats[e.category] || 0) + e.amount);
+                const chips = Object.entries(cats).map(([c, s]) =>
+                    `<div class="cat-chip"><div class="icon food">${c==='أكل'?'🍲':c==='مواصلات'?'🚗':'📌'}</div>${c} ${fmt(s)}</div>`
+                ).join('');
+                $('categoryChips').innerHTML = chips || '<span style="color:var(--muted);">لا توجد مصروفات</span>';
+
+                if (savingRate > 0) {
+                    $('savingsPlan').style.display = 'block';
+                    $('savingsPlan').innerHTML = `💰 <strong>خطة توفير ${savingRate}%</strong><br> الدخل: ${fmt(income)}<br> الادخار: ${fmt(saveAmt)}<br> المتبقي للصرف: ${fmt(avail)}<br> أنفقت: ${fmt(spent)}<br> متبقي للشهر: ${fmt(remaining)}<br> المتاح اليومي: ${fmt(daily)} (${daysLeft} يوم)`;
+                } else {
+                    $('savingsPlan').style.display = 'none';
+                }
+            }
+
+            function renderAdd() {
+                $('categorySelect').innerHTML = categories.map(c => `<option>${c}</option>`).join('');
+                $('dateInput').valueAsDate = new Date();
+            }
+            $('addExpenseBtn').onclick = () => {
+                if (!canUse()) { forceExpiredOverlay(); return; }
+                const amt = Number($('amountInput').value);
+                const cat = $('categorySelect').value;
+                const date = $('dateInput').value || todayStr();
+                if (!amt || amt <= 0) { $('addConfirmation').textContent = 'أدخل مبلغ صحيح'; return; }
+                expenses.push({ amount: amt, category: cat, date: new Date(date).toISOString() });
+                saveAll();
+                $('amountInput').value = '';
+                $('addConfirmation').textContent = `✅ تمت إضافة ${fmt(amt)}`;
+                setTimeout(() => $('addConfirmation').textContent = '', 2000);
+                if (currentScreen === 'home') renderHome();
+            };
+
+            let analysisDate = new Date();
+            function renderMonth() {
+                const y = analysisDate.getFullYear(), m = analysisDate.getMonth();
+                $('analysisMonthTitle').textContent = analysisDate.toLocaleDateString('ar-IQ', { month: 'long', year: 'numeric' });
+                const mexp = expenses.filter(e => { const d = new Date(e.date); return d.getFullYear() === y && d.getMonth() === m; });
+                const total = mexp.reduce((s, e) => s + e.amount, 0);
+                $('monthSpent').textContent = fmt(total);
+                const saveAmt = Math.floor(income * savingRate / 100);
+                $('monthSaved').textContent = fmt(Math.max(0, income - saveAmt - total));
+                drawPie('monthChart', mexp);
+                const cats = {};
+                mexp.forEach(e => cats[e.category] = (cats[e.category] || 0) + e.amount);
+                $('monthLegend').innerHTML = Object.entries(cats).map(([c, s]) => `<div>${c}: ${fmt(s)}</div>`).join('');
+            }
+            $('prevMonth').onclick = () => { analysisDate.setMonth(analysisDate.getMonth() - 1); renderMonth(); };
+            $('nextMonth').onclick = () => { analysisDate.setMonth(analysisDate.getMonth() + 1); renderMonth(); };
+
+            function renderCompareSelect() {
+                const now = new Date();
+                const opts = [];
+                for (let i = 0; i < 12; i++) {
+                    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                    opts.push({ key: `${d.getFullYear()}-${d.getMonth()}`, txt: d.toLocaleDateString('ar-IQ', { month: 'long', year: 'numeric' }) });
+                }
+                $('compareMonth1').innerHTML = $('compareMonth2').innerHTML = opts.map(o => `<option value="${o.key}">${o.txt}</option>`).join('');
+                if (opts.length > 1) $('compareMonth2').selectedIndex = 1;
+            }
+            $('compareBtn').onclick = () => {
+                const [y1, m1] = $('compareMonth1').value.split('-').map(Number);
+                const [y2, m2] = $('compareMonth2').value.split('-').map(Number);
+                const e1 = expenses.filter(e => { const d = new Date(e.date); return d.getFullYear() === y1 && d.getMonth() === m1; });
+                const e2 = expenses.filter(e => { const d = new Date(e.date); return d.getFullYear() === y2 && d.getMonth() === m2; });
+                const t1 = e1.reduce((s, e) => s + e.amount, 0), t2 = e2.reduce((s, e) => s + e.amount, 0);
+                const allCats = [...new Set([...e1.map(e => e.category), ...e2.map(e => e.category)])];
+                const d1 = allCats.map(c => e1.filter(e => e.category === c).reduce((s, e) => s + e.amount, 0));
+                const d2 = allCats.map(c => e2.filter(e => e.category === c).reduce((s, e) => s + e.amount, 0));
+                const ctx = $('compareChart').getContext('2d');
+                if (window._compareChart) window._compareChart.destroy();
+                window._compareChart = new Chart(ctx, {
+                    type: 'bar', data: { labels: allCats, datasets: [
+                        { label: 'الشهر الأول', data: d1, backgroundColor: '#B89B7A' },
+                        { label: 'الشهر الثاني', data: d2, backgroundColor: '#7B9E7B' }
+                    ]}, options: { responsive: true }
+                });
+                $('compareDetails').textContent = `الفارق: ${t2>=t1?'زيادة':'انخفاض'} ${fmt(Math.abs(t2-t1))}`;
+            };
+
+            function renderYearly() {
+                const y = new Date().getFullYear();
+                $('yearTitle').textContent = y;
+                const yexp = [];
+                for (let m = 0; m < 12; m++) yexp.push(...expenses.filter(e => { const d = new Date(e.date); return d.getFullYear() === y && d.getMonth() === m; }));
+                const total = yexp.reduce((s, e) => s + e.amount, 0);
+                $('yearSpent').textContent = fmt(total);
+                const ysave = Math.floor(income * 12 * savingRate / 100);
+                $('yearSaved').textContent = fmt(Math.max(0, income * 12 - total - ysave));
+                drawPie('yearChart', yexp);
+                const cats = {};
+                yexp.forEach(e => cats[e.category] = (cats[e.category] || 0) + e.amount);
+                const sorted = Object.entries(cats).sort((a, b) => b[1] - a[1]);
+                $('yearDetails').innerHTML = sorted.map(([c, s]) => `<div>${c}: ${fmt(s)} (${(s/total*100).toFixed(1)}%)</div>`).join('');
+            }
+
+            function renderTips() {
+                const spent = expenses.reduce((s, e) => s + e.amount, 0);
+                const cats = {};
+                expenses.forEach(e => cats[e.category] = (cats[e.category] || 0) + e.amount);
+                const top = Object.entries(cats).sort((a, b) => b[1] - a[1])[0];
+                let tips = [];
+                if (top) tips.push(`💡 أنفقت أكثر على "${top[0]}". لو قللته 10% ستوفر ${fmt(Math.floor(top[1]*0.1))}.`);
+                tips.push('💰 حاول ادخار 15% من راتبك الشهري.');
+                if (spent > income * 0.9) tips.push('⚠️ استهلكت معظم الراتب.');
+                $('tipsContainer').innerHTML = tips.map(t => `<div class="tip-bubble">${t}</div>`).join('');
+            }
+
+            function renderShop() {
+                const list = $('shoppingList');
+                if (!shopping.length) { list.innerHTML = '<p style="color:var(--muted);">لا توجد مواد</p>'; return; }
+                list.innerHTML = shopping.map((item, i) => `
+                    <div class="car-item"><div class="details"><strong>${item.name}</strong> - ${fmt(item.price)}<br><small>${item.date}</small></div>
+                    <span class="remove-cat" data-idx="${i}">🗑️</span></div>
+                `).join('');
+                document.querySelectorAll('#shoppingList .remove-cat').forEach(sp => {
+                    sp.onclick = function() {
+                        const idx = +this.dataset.idx;
+                        const price = shopping[idx].price;
+                        expenses = expenses.filter(e => !(e.category === 'تسوق' && e.amount === price && e.date.slice(0, 10) === shopping[idx].date));
+                        shopping.splice(idx, 1);
+                        saveAll();
+                        renderShop();
+                    };
+                });
+            }
+            $('addShopItemBtn').onclick = () => {
+                const name = $('shopItemInput').value.trim();
+                const price = +$('shopPriceInput').value;
+                const date = $('shopDateInput').value;
+                if (!name || !price || !date) { alert('املأ الحقول'); return; }
+                shopping.push({ name, price, date });
+                expenses.push({ amount: price, category: 'تسوق', date: new Date(date).toISOString() });
+                saveAll();
+                $('shopItemInput').value = ''; $('shopPriceInput').value = '';
+                renderShop();
+            };
+
+            function renderAppoint() {
+                const list = $('appointmentsList');
+                const now = new Date();
+                const upcoming = appointments.filter(a => new Date(a.date + 'T' + a.time) >= now).sort((a, b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time));
+                if (!upcoming.length) { list.innerHTML = '<p style="color:var(--muted);">لا مواعيد قادمة</p>'; return; }
+                list.innerHTML = upcoming.map((a, i) => `
+                    <div class="car-item"><div class="details"><strong>${a.title}</strong><br><small>${a.date} - ${a.time}</small></div>
+                    <span class="remove-cat" data-idx="${i}">🗑️</span></div>
+                `).join('');
+                document.querySelectorAll('#appointmentsList .remove-cat').forEach(sp => {
+                    sp.onclick = function() {
+                        const idx = +this.dataset.idx;
+                        const target = upcoming[idx];
+                        const realIdx = appointments.findIndex(a => a.title === target.title && a.date === target.date && a.time === target.time);
+                        if (realIdx > -1) { appointments.splice(realIdx, 1); saveAll(); renderAppoint(); }
+                    };
+                });
+            }
+            $('addAppointmentBtn').onclick = () => {
+                const title = $('appointmentTitleInput').value.trim();
+                const date = $('appointmentDateInput').value;
+                const time = $('appointmentTimeInput').value;
+                if (!title || !date || !time) { alert('املأ الحقول'); return; }
+                appointments.push({ title, date, time });
+                saveAll();
+                $('appointmentTitleInput').value = '';
+                renderAppoint();
+            };
+
+            function renderBills() {
+                const list = $('billsList');
+                if (!bills.length) { list.innerHTML = '<p style="color:var(--muted);">لا مستحقات</p>'; return; }
+                list.innerHTML = bills.map((b, i) => {
+                    const paid = (b.payments || []).reduce((s, p) => s + p.amount, 0);
+                    const rem = Math.max(0, b.total - b.down - paid);
+                    const done = (paid + b.down) >= b.total;
+                    const nextDue = done ? 'مكتمل' : (() => {
+                        const d = new Date(b.firstDate);
+                        d.setMonth(d.getMonth() + (b.payments || []).length);
+                        return d.toLocaleDateString('ar-IQ');
+                    })();
+                    return `<div class="installment-item">
+                        <div style="display:flex;justify-content:space-between;"><strong>${b.title}</strong><span>${Math.round((paid+b.down)/b.total*100)}%</span></div>
+                        <small>القسط: ${fmt(Math.ceil((b.total-b.down)/b.installments))}</small><br>
+                        <small>المدفوع: ${fmt(paid+b.down)} / متبقي: ${fmt(rem)}</small><br>
+                        <small>القسط القادم: ${nextDue}</small>
+                        <div style="margin-top:6px;display:flex;gap:6px;">
+                            <button class="btn btn-outline pay-btn" data-idx="${i}" style="width:auto;padding:6px 12px;">💵 سدد</button>
+                            <button class="btn btn-danger del-btn" data-idx="${i}" style="width:auto;padding:6px 12px;">🗑️</button>
+                        </div>
+                    </div>`;
+                }).join('');
+                document.querySelectorAll('.pay-btn').forEach(btn => {
+                    btn.onclick = function() {
+                        const idx = +this.dataset.idx;
+                        const b = bills[idx];
+                        if (!b.payments) b.payments = [];
+                        const installment = Math.ceil((b.total - b.down) / b.installments);
+                        b.payments.push({ date: new Date().toISOString(), amount: installment });
+                        saveAll();
+                        renderBills();
+                        if (b.payments.reduce((s, p) => s + p.amount, 0) + b.down >= b.total) alert('🎉 اكتمل السداد!');
+                    };
+                });
+                document.querySelectorAll('.del-btn').forEach(btn => {
+                    btn.onclick = function() { const idx = +this.dataset.idx; bills.splice(idx, 1); saveAll(); renderBills(); };
+                });
+            }
+            $('addBillBtn').onclick = () => {
+                const title = $('billTitleInput').value.trim();
+                const total = +$('billTotalInput').value;
+                const down = +$('billDownPaymentInput').value || 0;
+                const installments = +$('billInstallmentsInput').value;
+                const firstDate = $('billFirstDateInput').value;
+                if (!title || !total || !installments || !firstDate) { alert('املأ الحقول'); return; }
+                bills.push({ title, total, down, installments, firstDate, payments: [] });
+                saveAll();
+                renderBills();
+            };
+
+            let prayerView = new Date();
+            function renderPrayer() {
+                const y = prayerView.getFullYear(), m = prayerView.getMonth();
+                $('prayerMonthTitle').textContent = prayerView.toLocaleDateString('ar-IQ', { month: 'long', year: 'numeric' });
+                const totalDays = daysInMonth(y, m);
+                const today = todayStr();
+                let html = '';
+                for (let d = 1; d <= totalDays; d++) {
+                    const date = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                    const day = prayers[date] || {};
+                    const done = Object.values(day).filter(v => v).length;
+                    html += `<div class="prayer-cell ${date===today?'today':''}" data-date="${date}"><div class="day-num">${d}</div><div class="done-count">${done}/5</div></div>`;
+                }
+                $('prayerCalendar').innerHTML = html;
+                document.querySelectorAll('.prayer-cell').forEach(cell => cell.onclick = () => selectPrayerDay(cell.dataset.date));
+                selectPrayerDay(today);
+                updatePrayerStats();
+            }
+            function selectPrayerDay(date) {
+                const day = prayers[date] || {};
+                const names = { fajr: 'الفجر', dhuhr: 'الظهر', asr: 'العصر', maghrib: 'المغرب', isha: 'العشاء' };
+                let html = '';
+                for (const [k, v] of Object.entries(names)) {
+                    const chk = day[k] ? '✅' : '⬜';
+                    html += `<div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span>${v} ${chk}</span><button class="btn btn-outline toggle-prayer" data-date="${date}" data-prayer="${k}" style="width:auto;padding:4px 10px;">تبديل</button></div>`;
+                }
+                $('prayerDayDetail').innerHTML = html;
+                document.querySelectorAll('.toggle-prayer').forEach(btn => {
+                    btn.onclick = function() {
+                        const d = this.dataset.date, p = this.dataset.prayer;
+                        if (!prayers[d]) prayers[d] = {};
+                        prayers[d][p] = !prayers[d][p];
+                        saveAll();
+                        selectPrayerDay(d);
+                        renderPrayer();
+                    };
+                });
+            }
+            function updatePrayerStats() {
+                const y = new Date().getFullYear(), m = new Date().getMonth();
+                let monthDays = 0, monthComplete = 0, yearDays = 0, yearComplete = 0;
+                for (const [date, day] of Object.entries(prayers)) {
+                    const d = new Date(date);
+                    if (d.getFullYear() === y && d.getMonth() === m) { monthDays++; if (day.fajr && day.dhuhr && day.asr && day.maghrib && day.isha) monthComplete++; }
+                    if (d.getFullYear() === y) { yearDays++; if (day.fajr && day.dhuhr && day.asr && day.maghrib && day.isha) yearComplete++; }
+                }
+                $('prayerStats').innerHTML = `<p>هذا الشهر: ${monthComplete} يوم من ${monthDays}</p><p>هذه السنة: ${yearComplete} يوم من ${yearDays}</p>`;
+            }
+            $('prayerPrevMonth').onclick = () => { prayerView.setMonth(prayerView.getMonth() - 1); renderPrayer(); };
+            $('prayerNextMonth').onclick = () => { prayerView.setMonth(prayerView.getMonth() + 1); renderPrayer(); };
+
+            function renderCar() { renderOil(); renderMaint(); renderTires(); }
+            function renderOil() {
+                const list = $('oilChangeList');
+                if (!oilChanges.length) { list.innerHTML = '<p style="color:var(--muted);">لا تغييرات</p>'; return; }
+                list.innerHTML = oilChanges.map((o, i) => `<div class="car-item"><div class="details"><strong>${o.date}</strong> - ${o.filter?'مع فلتر':'بدون'} - ${fmt(o.cost||0)}</div><span class="remove-cat" data-idx="${i}">🗑️</span></div>`).join('');
+                document.querySelectorAll('#oilChangeList .remove-cat').forEach(sp => { sp.onclick = function() { const idx = +this.dataset.idx; oilChanges.splice(idx, 1); saveAll(); renderOil(); }; });
+            }
+            function renderMaint() {
+                const list = $('maintenanceList');
+                if (!maintenances.length) { list.innerHTML = '<p style="color:var(--muted);">لا صيانة</p>'; return; }
+                list.innerHTML = maintenances.map((m, i) => `<div class="car-item"><div class="details"><strong>${m.desc}</strong><br><small>${m.date} | القطع: ${m.parts||'-'} | ${fmt(m.cost)}</small></div><span class="remove-cat" data-idx="${i}">🗑️</span></div>`).join('');
+                document.querySelectorAll('#maintenanceList .remove-cat').forEach(sp => { sp.onclick = function() { const idx = +this.dataset.idx; maintenances.splice(idx, 1); saveAll(); renderMaint(); }; });
+            }
+            function renderTires() {
+                const list = $('tireChangeList');
+                if (!tireChanges.length) { list.innerHTML = '<p style="color:var(--muted);">لا إطارات</p>'; return; }
+                list.innerHTML = tireChanges.map((t, i) => `<div class="car-item"><div class="details"><strong>${t.date}</strong> - ${t.brand} - ${fmt(t.cost)}</div><span class="remove-cat" data-idx="${i}">🗑️</span></div>`).join('');
+                document.querySelectorAll('#tireChangeList .remove-cat').forEach(sp => { sp.onclick = function() { const idx = +this.dataset.idx; tireChanges.splice(idx, 1); saveAll(); renderTires(); }; });
+            }
+            $('addOilChangeBtn').onclick = () => {
+                const date = $('oilDateInput').value, filter = $('oilFilterCheckbox').checked, cost = +$('oilCostInput').value || 0;
+                if (!date) { alert('اختر التاريخ'); return; }
+                oilChanges.push({ date, filter, cost });
+                if (cost) expenses.push({ amount: cost, category: 'سيارة', date: new Date(date).toISOString() });
+                saveAll(); $('oilDateInput').value = ''; $('oilFilterCheckbox').checked = false; $('oilCostInput').value = ''; renderOil();
+            };
+            $('addMaintenanceBtn').onclick = () => {
+                const desc = $('maintenanceDescInput').value.trim(), date = $('maintenanceDateInput').value, parts = $('maintenancePartsInput').value.trim(), cost = +$('maintenanceCostInput').value;
+                if (!desc || !date || !cost) { alert('املأ الوصف والتاريخ والتكلفة'); return; }
+                maintenances.push({ desc, date, parts, cost });
+                expenses.push({ amount: cost, category: 'سيارة', date: new Date(date).toISOString() });
+                saveAll(); $('maintenanceDescInput').value = ''; $('maintenanceDateInput').value = ''; $('maintenancePartsInput').value = ''; $('maintenanceCostInput').value = ''; renderMaint();
+            };
+            $('addTireChangeBtn').onclick = () => {
+                const date = $('tireDateInput').value, brand = $('tireBrandInput').value.trim(), cost = +$('tireCostInput').value;
+                if (!date || !brand || !cost) { alert('املأ الحقول'); return; }
+                tireChanges.push({ date, brand, cost });
+                expenses.push({ amount: cost, category: 'سيارة', date: new Date(date).toISOString() });
+                saveAll(); $('tireDateInput').value = ''; $('tireBrandInput').value = ''; $('tireCostInput').value = ''; renderTires();
+            };
+
+            let calcExpr = '';
+            function clearCalc() { calcExpr = ''; $('calcDisplay').textContent = '0'; }
+            (function buildCalc() {
+                const btns = ['7','8','9','÷','4','5','6','×','1','2','3','-','0','.','C','+','='];
+                const grid = $('calcGrid');
+                grid.innerHTML = btns.map(v => { const cls = (v==='÷'||v==='×'||v==='-'||v==='+'||v==='C')?'op':(v==='='?'eq':''); return `<button class="calc-btn ${cls}">${v==='*'?'×':v==='/'?'÷':v}</button>`; }).join('');
+                document.querySelectorAll('.calc-btn').forEach(btn => { btn.onclick = () => { const v = btn.textContent; if (v==='C') calcExpr=''; else if (v==='=') { try { calcExpr = Function('"use strict"; return ('+calcExpr.replace(/×/g,'*').replace(/÷/g,'/')+')')(); } catch { calcExpr='خطأ'; } } else calcExpr+=v; $('calcDisplay').textContent=calcExpr||'0'; }; });
+            })();
+
+            function renderSettings() {
+                $('userNameInput').value = userName;
+                $('newIncomeInput').value = income;
+                $('savingRateInput').value = savingRate;
+                $('lockCheckbox').checked = lockOn;
+                $('lockFields').style.display = lockOn ? 'block' : 'none';
+                $('categoriesContainer').innerHTML = categories.map(c => `<span class="category-tag">${c} <span class="remove-cat" data-cat="${c}">✕</span></span>`).join('');
+                document.querySelectorAll('#settings-screen .remove-cat').forEach(sp => { sp.onclick = function() { const cat = this.dataset.cat; if (confirm(`حذف "${cat}"؟`)) { categories = categories.filter(c => c!==cat); saveAll(); renderSettings(); } }; });
+                updateSubUI();
+            }
+            function updateSubUI() {
+                if (activated && subActive) $('subscriptionStatus').innerHTML = `<span class="subscription-badge">✅ مفعل</span> متبقي ${subDaysLeft} يوم`;
+                else if (activated && !subActive) $('subscriptionStatus').innerHTML = `<span class="subscription-badge expired">⚠️ منتهي</span>`;
+                else if (!activated && !trialExpired) $('subscriptionStatus').innerHTML = `<span class="subscription-badge">🆓 تجريبي</span> متبقي ${trialDaysLeft} يوم`;
+                else $('subscriptionStatus').innerHTML = `<span class="subscription-badge expired">⚠️ منتهي</span>`;
+            }
+            $('saveSettingsBtn').onclick = () => { userName = $('userNameInput').value.trim()||'أحمد'; income = +$('newIncomeInput').value||income; set(KEYS.name, userName); set(KEYS.income, income); alert('تم الحفظ'); };
+            $('saveSavingRateBtn').onclick = () => { const rate = +$('savingRateInput').value; if (isNaN(rate)||rate<0||rate>100) { alert('نسبة 0-100'); return; } savingRate = rate; set(KEYS.saving, rate); alert('تم تطبيق خطة التوفير'); };
+            $('addCategoryBtn').onclick = () => { const c = $('newCategoryInput').value.trim(); if (c && !categories.includes(c)) { categories.push(c); saveAll(); $('newCategoryInput').value=''; renderSettings(); } };
+            $('lockCheckbox').onchange = function() { lockOn = this.checked; $('lockFields').style.display = lockOn?'block':'none'; set(KEYS.lockOn, lockOn); };
+            $('changePasswordBtn').onclick = () => { const old = $('oldPasswordInput').value.trim(), nw = $('newPasswordInput').value.trim(); if (!old||!nw) { $('passwordMsg').textContent='املأ الحقلين'; return; } if (old!==lockPass) { $('passwordMsg').textContent='كلمة قديمة خطأ'; return; } lockPass = nw; set(KEYS.lockPass, lockPass); $('passwordMsg').textContent='✅ تم التغيير'; $('oldPasswordInput').value=''; $('newPasswordInput').value=''; };
+
+            function doActivate(input, msg) {
+                const code = input.value.trim();
+                const parts = code.split('-');
+                if (parts.length !== 2 || parts[0] !== MASTER || !/^\d{2}$/.test(parts[1]) || +parts[1] < 1 || +parts[1] > 99) {
+                    msg.textContent = '❌ كود غير صالح';
+                    return false;
+                }
+                const expiry = new Date();
+                expiry.setDate(expiry.getDate() + SUB_DAYS);
+                activated = true;
+                subExpiry = expiry.toISOString();
+                set(KEYS.activated, true);
+                set(KEYS.subExpiry, subExpiry);
+                msg.textContent = '✅ تم التفعيل 30 يوم';
+                input.value = '';
+                hideAllOverlays();
+                checkAccess();
+                return true;
+            }
+            $('activateBtn').onclick = () => doActivate($('activationCodeInput'), $('activationMsg'));
+            $('activateFromSettingsBtn').onclick = () => doActivate($('settingsActivationCode'), $('settingsActivationMsg'));
+
+            $('whatsappOrderBtn').onclick = $('whatsappOrderBtn2').onclick = () => {
+                window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent('أريد كود تفعيل ميزان، دفعت عبر زين كاش/Q card')}`, '_blank');
+            };
+
+            $('exportBtn').onclick = () => {
+                const data = { income, expenses, categories, userName, savingRate, shopping, appointments, bills, prayers, oilChanges, maintenances, tireChanges };
+                const blob = new Blob([JSON.stringify(data)], {type:'application/json'});
+                const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `mezan_backup_${todayStr()}.json`; a.click();
+            };
+            $('importBtn').onclick = () => $('importFile').click();
+            $('importFile').onchange = function() {
+                const file = this.files[0]; if (!file) return;
+                const reader = new FileReader();
+                reader.onload = e => {
+                    try {
+                        const d = JSON.parse(e.target.result);
+                        if (d.income) income = d.income; if (d.expenses) expenses = d.expenses; if (d.categories) categories = d.categories;
+                        if (d.userName) userName = d.userName; if (d.savingRate !== undefined) savingRate = d.savingRate;
+                        if (d.shopping) shopping = d.shopping; if (d.appointments) appointments = d.appointments; if (d.bills) bills = d.bills;
+                        if (d.prayers) prayers = d.prayers; if (d.oilChanges) oilChanges = d.oilChanges; if (d.maintenances) maintenances = d.maintenances;
+                        if (d.tireChanges) tireChanges = d.tireChanges;
+                        saveAll(); alert('تم الاستيراد'); showScreen('home');
+                    } catch { alert('ملف غير صالح'); }
+                };
+                reader.readAsText(file);
+            };
+            $('resetDataBtn').onclick = () => { if (confirm('مسح جميع البيانات؟')) { localStorage.clear(); location.reload(); } };
+            $('darkModeSettingsBtn').onclick = () => document.body.classList.toggle('dark');
+
+            function drawPie(canvasId, dataArr) {
+                const canvas = document.getElementById(canvasId); if (!canvas) return;
+                const ctx = canvas.getContext('2d'); const cats = {}; dataArr.forEach(e => cats[e.category] = (cats[e.category]||0)+e.amount);
+                const labels = Object.keys(cats), data = Object.values(cats);
+                if (window[canvasId+'Chart']) window[canvasId+'Chart'].destroy();
+                if (!labels.length) return;
+                window[canvasId+'Chart'] = new Chart(ctx, { type: 'doughnut', data: { labels, datasets: [{ data, backgroundColor: ['#B89B7A','#D4B896','#E8D5C0','#A0896E','#8B7355','#C9A882','#E0C8A8'] }] }, options: { plugins: { legend: { position: 'bottom' } } } });
+            }
+
+            function hideAllOverlays() {
+                $('salarySetup').style.display = 'none';
+                $('expiredOverlay').style.display = 'none';
+                $('trialReminderOverlay').style.display = 'none';
+                $('lockOverlay').style.display = 'none';
+            }
+
+            function forceExpiredOverlay() {
+                hideAllOverlays();
+                $('expiredOverlay').style.display = 'flex';
+            }
+
+            function checkAccess() {
+                if (canUse()) {
+                    $('expiredOverlay').style.display = 'none';
+                    if (income === 0) {
+                        $('salarySetup').style.display = 'flex';
+                    } else if (lockOn) {
+                        $('lockOverlay').style.display = 'flex';
+                    }
+                    if (!activated && trialDaysLeft <= 1 && trialDaysLeft > 0) {
+                        $('trialDaysLeft').textContent = trialDaysLeft;
+                        $('trialReminderOverlay').style.display = 'flex';
+                    }
+                } else {
+                    forceExpiredOverlay();
+                }
+            }
+
+            $('continueTrialBtn').onclick = () => {
+                if (!canUse()) { forceExpiredOverlay(); return; }
+                $('trialReminderOverlay').style.display = 'none';
+                if (income === 0) $('salarySetup').style.display = 'flex';
+                else if (lockOn) $('lockOverlay').style.display = 'flex';
+            };
+
+            $('unlockBtn').onclick = () => {
+                if ($('lockPasswordInput').value === lockPass) {
+                    $('lockOverlay').style.display = 'none';
+                } else {
+                    $('lockError').textContent = 'كلمة سر خاطئة';
+                }
+            };
+
+            function start() {
+                if (!canUse()) {
+                    forceExpiredOverlay();
+                    return;
+                }
+                hideAllOverlays();
+                if (income === 0) {
+                    $('salarySetup').style.display = 'flex';
+                } else {
+                    checkAccess();
+                }
+                renderHome();
+                renderAdd();
+            }
+
+            $('startBtn').onclick = () => {
+                const val = +$('salaryInput').value;
+                if (!val) { alert('أدخل راتب صحيح'); return; }
+                income = val;
+                set(KEYS.income, val);
+                if (!canUse()) { forceExpiredOverlay(); return; }
+                $('salarySetup').style.display = 'none';
+                if (lockOn) $('lockOverlay').style.display = 'flex';
+                renderHome();
+            };
+
+            start();
+
+            setInterval(() => {
+                if (!canUse()) {
+                    forceExpiredOverlay();
+                }
+            }, 2000);
+        })();
+    </script>
+</body>
+</html>
